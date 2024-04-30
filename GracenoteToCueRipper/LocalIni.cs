@@ -9,49 +9,15 @@ namespace GracenoteToCueRipper
 {
     internal class LocalIni
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="lpAppName"></param>
-        /// <param name="lpKeyName"></param>
-        /// <param name="lpDefault"></param>
-        /// <param name="lpReturnedString"></param>
-        /// <param name="nSize"></param>
-        /// <param name="lpFileName"></param>
-        /// <returns></returns>
-        [DllImport("KERNEL32.DLL")]
-        public static extern uint GetPrivateProfileString(
-            string lpAppName,
-            string lpKeyName,
-            string lpDefault,
-            StringBuilder lpReturnedString,
-            uint nSize,
-            string lpFileName);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="lpAppName"></param>
-        /// <param name="lpKeyName"></param>
-        /// <param name="nDefault"></param>
-        /// <param name="lpFileName"></param>
-        /// <returns></returns>
-        [DllImport("KERNEL32.DLL")]
-        public static extern uint GetPrivateProfileInt(
-            string lpAppName,
-            string lpKeyName,
-            int nDefault,
-            string lpFileName);
-
         [DllImport("KERNEL32.DLL")]
         public static extern int GetPrivateProfileSection(
-             [In][MarshalAs(UnmanagedType.LPStr)] string lpAppName,
+             [In] string lpAppName,
             // Note that because the key/value pars are returned as null-terminated
             // strings with the last string followed by 2 null-characters, we cannot
             // use StringBuilder.
             [In] IntPtr lpReturnedString,
-            [In] UInt32 nSize,
-            [In][MarshalAs(UnmanagedType.LPStr)] string lpFileName);
+            [In] uint nSize,
+            [In] string lpFileName);
 
         /// <summary>
         /// 
@@ -62,6 +28,61 @@ namespace GracenoteToCueRipper
         {
             System.Management.ManagementObject _mo = new System.Management.ManagementObject("Win32_LogicalDisk=\"" + driveName + "\"");
             return ((string)_mo.Properties["VolumeSerialNumber"].Value).TrimStart(['0']);
+        }
+        public static string ReadLocalIni(out int totalDiscs, out int year, out int numtracks, out string artist, out string title, out string[] trackInfo, string drive)
+        {
+            totalDiscs = 0;
+            year = 0;
+            numtracks = 0;
+            artist = "";
+            title = "";
+            trackInfo = [];
+            IntPtr iniString = Marshal.AllocHGlobal(32767);
+            string localId = GetLocalId(drive);
+            string result="";
+            string initFileName = System.Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\VirtualStore\\Windows" + @"\cdplayer.ini";
+            if (System.IO.File.Exists(initFileName))
+            {
+                int length = GetPrivateProfileSection(localId, iniString, 32767, initFileName);
+                result = Marshal.PtrToStringAnsi(iniString, length);
+                string[] keys = result.TrimEnd('\0').Split('\0');
+                foreach (var key in keys)
+                {
+                    string[] dic = key.Split('=');
+                    switch (dic[0])
+                    {
+                        case "artist":
+                            artist = dic[1];
+                            break;
+                        case "title":
+                            title = dic[1];
+                            break;
+                        case "numtracks":
+                            numtracks = Convert.ToInt32(dic[1]);
+                            trackInfo = new string[numtracks];
+                            break;
+                        case "totaldiscs":
+                            totalDiscs = Convert.ToInt32(dic[1]);
+                            break;
+                        case "year":
+                            year = Convert.ToInt32(dic[1]);
+                            break;
+                    }
+
+                    //数字に変換出来たらトラック番号(0-99)
+                    if (int.TryParse(dic[0], out int trackNum))
+                    {
+
+                        if ((trackNum >= 0) && (trackNum <= 99))
+                        {
+                            trackInfo[trackNum] = dic[1];
+                        }
+                    }
+
+                }
+            }
+
+            return result;
         }
     }
 }

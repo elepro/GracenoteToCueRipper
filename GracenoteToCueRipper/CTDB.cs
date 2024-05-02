@@ -31,7 +31,7 @@ namespace GracenoteToCueRipper
             return Convert.ToBase64String(hashBytes).Replace('+', '.').Replace('/', '_').Replace('=', '-');
         }
 
-        public static void WriteCuetoolsXML(int totalDiscs, int discNumber, int year, string artist, string title, string[] track, string ctdbid)
+        public static void WriteXML(ref CDINFO info, string ctdbid)
         {
             string file = Environment.GetEnvironmentVariable("APPDATA") + @"\CUE Tools\MetadataCache\" + ctdbid + ".xml0";
 
@@ -46,29 +46,29 @@ namespace GracenoteToCueRipper
                 writer.WriteString(ctdbid);
                 writer.WriteEndElement();
                 writer.WriteStartElement("TotalDiscs");
-                writer.WriteString(totalDiscs.ToString());
+                writer.WriteString(info.DiscCount.ToString());
                 writer.WriteEndElement();
                 writer.WriteStartElement("DiscNumber");
-                writer.WriteString(discNumber.ToString());
+                writer.WriteString(info.DiscNumber.ToString());
                 writer.WriteEndElement();
                 writer.WriteStartElement("Year");
-                writer.WriteString(year.ToString());
+                writer.WriteString(info.Year.ToString());
                 writer.WriteEndElement();
                 writer.WriteStartElement("Artist");
-                writer.WriteString(artist);
+                writer.WriteString(info.AlbumArtist);
                 writer.WriteEndElement();
                 writer.WriteStartElement("Title");
-                writer.WriteString(title);
+                writer.WriteString(info.AlbumTitle);
                 writer.WriteEndElement();
                 writer.WriteStartElement("Tracks");
-                foreach (var tr in track)
+                for (int i = 1; i <= info.TrackCount; i++)
                 {
                     writer.WriteStartElement("CUETrackMetadata");
                     writer.WriteStartElement("Artist");
-                    writer.WriteString(artist);
+                    writer.WriteString(info.TrackArtist[i]);
                     writer.WriteEndElement();
                     writer.WriteStartElement("Title");
-                    writer.WriteString(tr);
+                    writer.WriteString(info.TrackTitle[i]);
                     writer.WriteEndElement();
                     writer.WriteEndElement();
                 }

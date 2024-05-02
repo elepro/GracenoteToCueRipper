@@ -36,14 +36,8 @@ namespace GracenoteToCueRipper
         /// <param name="trackInfo"></param>
         /// <param name="drive"></param>
         /// <returns></returns>
-        public static string ReadLocalIni(out int totalDiscs, out int year, out int numtracks, out string artist, out string title, out string[] trackInfo, string drive)
+        public static string ReadLocalIni(ref CDINFO info, string drive)
         {
-            totalDiscs = 0;
-            year = 0;
-            numtracks = 0;
-            artist = "";
-            title = "";
-            trackInfo = [];
             char[] iniString = new char[32767];
             string localId = GetLocalId(drive);
             string result = string.Empty;
@@ -61,20 +55,19 @@ namespace GracenoteToCueRipper
                         switch (dic[0])
                         {
                             case "artist":
-                                artist = dic[1];
+                                info.AlbumArtist = dic[1];
                                 break;
                             case "title":
-                                title = dic[1];
+                                info.AlbumTitle = dic[1];
                                 break;
                             case "numtracks":
-                                numtracks = Convert.ToInt32(dic[1]);
-                                trackInfo = new string[numtracks];
+                                info.TrackCount = Convert.ToInt32(dic[1]);
                                 break;
                             case "totaldiscs":
-                                totalDiscs = Convert.ToInt32(dic[1]);
+                                info.DiscCount = Convert.ToUInt32(dic[1]);
                                 break;
                             case "year":
-                                year = Convert.ToInt32(dic[1]);
+                                info.Year = Convert.ToUInt32(dic[1]);
                                 break;
                         }
 
@@ -84,7 +77,7 @@ namespace GracenoteToCueRipper
 
                             if ((trackNum >= 0) && (trackNum <= 99))
                             {
-                                trackInfo[trackNum] = dic[1];
+                                info.TrackTitle[trackNum + 1] = dic[1]; //1-100とする
                             }
                         }
                     }

@@ -38,6 +38,7 @@ for (int i = 0; i < count; i++)
     //XMLに出力
     CTDB.WriteXML(ref cdInfo[i], ctdbid);
 }
+Console.WriteLine("Finished {0:d} items",count);
 //end
 
 

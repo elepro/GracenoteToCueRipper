@@ -35,7 +35,11 @@ namespace GracenoteToCueRipper
         {
             string file = Environment.GetEnvironmentVariable("APPDATA") + @"\CUE Tools\MetadataCache\" + ctdbid + ".xml0";
 
-            XmlWriterSettings setting = new XmlWriterSettings { Indent = true, };
+            XmlWriterSettings setting = new XmlWriterSettings
+            {
+                Indent = true,
+                Encoding = new System.Text.UTF8Encoding(false), //UTF8 without BOM
+            };
             XmlWriter writer = XmlWriter.Create(file, setting);
             writer.WriteStartDocument();
             writer.WriteStartElement("CUEMetadata");

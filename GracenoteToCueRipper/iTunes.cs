@@ -45,25 +45,24 @@ namespace GracenoteToCueRipper
 
                     playLists = src.Playlists;
 
-                    playList = playLists[1];
+                    playList = playLists[1];    //1スタート
 
                     tracks = playList.Tracks;
-
-                    //アルバムアーティスト情報はなさそう
-                    //Debug.WriteLine(playList.trackID);
-                    //Debug.WriteLine(playList.trackID);
-                    //Debug.WriteLine(playList.playlistID);
-                    //Debug.WriteLine(playList.Duration);
-                    //Debug.WriteLine(playList.Kind);
-                    //Debug.WriteLine(playList.Size);
-                    //Debug.WriteLine(playList.Name);
-                    //Debug.WriteLine(playList.Time);
-                    //Debug.WriteLine(playList.Shuffle);
-                    //Debug.WriteLine(playList.Source.Name);
 
                     trackCount = tracks.Count;
 
                     cd[foundDiscCount].AlbumTitle = playList.Name;
+
+                    //アルバムアーティスト
+                    //dynamicでキャストするとArtist（アルバムアーティスト）を読み込める。
+                    dynamic pl = playList;
+                    cd[foundDiscCount].AlbumArtist = pl.Artist;
+
+                    cd[foundDiscCount].Compilation = pl.Compilation;
+                    cd[foundDiscCount].DiscCount = (uint)pl.DiscCount;
+                    cd[foundDiscCount].DiscNumber = (uint)pl.DiscNumber;
+                    cd[foundDiscCount].TrackCount = pl.Tracks.Count;
+                    cd[foundDiscCount].Year = (uint)pl.Year;
 
                     //各トラックの情報取得
                     for (int t = 1; t <= trackCount; t++)   //1から始める
@@ -71,38 +70,8 @@ namespace GracenoteToCueRipper
                         IITTrack track;
                         track = tracks[t];
 
-                        bool isCompilation;
-                        isCompilation = track.Compilation;
-
-                        int discCount;
-                        discCount = track.DiscCount;
-
-                        int discNumber;
-                        discNumber = track.DiscNumber;
-
-                        string trackArtist;
-                        trackArtist = track.Artist;
-
-                        string trackTitle;
-                        trackTitle = track.Name;
-
-                        int year;
-                        year = track.Year;
-
-                        cd[foundDiscCount].Compilation = isCompilation;
-
-                        if (t == 1)
-                        {
-                            //1曲目のアーティストをアルバムアーティストとする。
-                            cd[foundDiscCount].AlbumArtist = trackArtist;
-                        }
-
-                        cd[foundDiscCount].TrackArtist[t] = trackArtist;
-                        cd[foundDiscCount].TrackTitle[t] = trackTitle;
-                        cd[foundDiscCount].TrackCount = trackCount;
-                        cd[foundDiscCount].DiscCount = (uint)discCount;
-                        cd[foundDiscCount].DiscNumber = (uint)discNumber;
-                        cd[foundDiscCount].Year = (uint)year;
+                        cd[foundDiscCount].TrackArtist[t] = track.Artist;
+                        cd[foundDiscCount].TrackTitle[t] = track.Name;
 
                         //MessageBox(NULL,Title ,L"",NULL);
                     }

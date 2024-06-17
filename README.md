@@ -1,7 +1,6 @@
 # GracenoteToCueRipper
 Gracenote CDDBから情報を取得し、CueToolsで使用するXMLファイルに出力します。  
 Gracenote CDDBへのアクセスはiTunesを利用します。  
-iTunesにはアルバムアーティスト名を出力するAPIが存在しないため、1曲目のアーティスト名を代用します。  
 XMLの出力先は"%%APPDATA%%\CUE Tools\MetadataCache\"フォルダです。
 
 # 使い方

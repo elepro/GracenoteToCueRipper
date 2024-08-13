@@ -33,19 +33,19 @@ namespace GracenoteToCueRipper
 
         public static void WriteXML(ref CDINFO info, string ctdbid)
         {
-            string file = Environment.GetEnvironmentVariable("APPDATA") + @"\CUE Tools\MetadataCache\" + ctdbid + ".xml0";
+            string file = Environment.GetEnvironmentVariable("APPDATA") + @"\CUE Tools\MetadataCache\" + ctdbid + ".xml";
 
-            XmlWriterSettings setting = new XmlWriterSettings
+            XmlWriterSettings setting = new ()
             {
                 Indent = true,
                 Encoding = new System.Text.UTF8Encoding(false), //UTF8 without BOM
             };
-            XmlWriter writer = XmlWriter.Create(file, setting);
-            writer.WriteStartDocument();
-            writer.WriteStartElement("CUEMetadata");
-            writer.WriteAttributeString("xmlns", "xsd", null, "http://www.w3.org/2001/XMLSchema");
-            writer.WriteAttributeString("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance");
+            using XmlWriter writer = XmlWriter.Create(file, setting);
             {
+                writer.WriteStartDocument();
+                writer.WriteStartElement("CUEMetadata");
+                writer.WriteAttributeString("xmlns", "xsd", null, "http://www.w3.org/2001/XMLSchema");
+                writer.WriteAttributeString("xmlns", "xsi", null, "http://www.w3.org/2001/XMLSchema-instance");
                 writer.WriteStartElement("Id");
                 writer.WriteString(ctdbid);
                 writer.WriteEndElement();
@@ -77,12 +77,12 @@ namespace GracenoteToCueRipper
                     writer.WriteEndElement();
                 }
                 writer.WriteEndElement();
-            }
 
-            writer.WriteStartElement("AlbumArt");
-            writer.WriteEndElement();
-            writer.WriteEndElement();
-            writer.Close();
+                writer.WriteStartElement("AlbumArt");
+                writer.WriteEndElement();
+                writer.WriteEndElement();
+                writer.Close();
+            }
         }
     }
 }
